@@ -9,7 +9,7 @@ import {
    PoTableColumnSortType
   } from '@po-ui/ng-components';
 
-const STORAGE_KEY = 'aprovadores-list';
+const STORAGE_KEY = 'hierarquias-list';
 
 @Injectable({ providedIn: 'root' })
 export class HierarquiasService {
@@ -30,6 +30,31 @@ export class HierarquiasService {
   getByFilter(params:{estabelecimento?:string, lotacao?:string, tipoDocumento?:string, codigo?:string, sequencia?:string }): Observable<PagedResult<Hierarquias>> {
     console.log('getByFilter');
     return this.http.get<PagedResult<Hierarquias>>(this.urlApi, {headers: {'Authorization': 'Basic YXBwOkMzRE5JQmpVaHVTVg=='}, params:params });
+  }
+
+  getById(id: string | null): Observable<Hierarquias> {
+    if (!id) {
+      return of({
+        estabelecimento: '',
+        lotacao: '',
+        tipoDocumento: '',
+        sequencia: '',
+        codigo: '',
+        limite: 0,
+      });
+    }
+
+    const item = this.readStorage()?.find(
+      (current) => current.codigo === id || current['id'] === id
+    );
+
+    if (item) {
+      return of({ ...item });
+    }
+
+    return this.http.get<Hierarquias>(`${this.urlApi}/${id}`, {
+      headers: { Authorization: 'Basic YXBwOkMzRE5JQmpVaHVTVg==' },
+    });
   }
 
   create(item: Hierarquias): Observable<Hierarquias> {

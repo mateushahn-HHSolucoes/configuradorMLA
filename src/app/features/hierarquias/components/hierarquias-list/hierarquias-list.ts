@@ -110,7 +110,7 @@ export class HierarquiasList {
   ];
 
   readonly tableActions: PoTableAction[] = [
-    { label: 'Editar', action: (item: Hierarquias) => this.router.navigate(['/hierarquias/editar', item.codigo]) },
+    { label: 'Editar', action: (item: Hierarquias) => this.router.navigate(['/hierarquias/editar', item.estabelecimento, item.lotacao, item.tipoDocumento, item.sequencia ]) },
     { label: 'Excluir', action: (item: Hierarquias) => this.confirmDelete(item) }
   ];
 

@@ -16,7 +16,7 @@ export const hierarquiasRoutes: Routes = [
       ),
   },
   {
-    path: 'editar/:id',
+    path: 'editar/:estabelecimento/:lotacao/:tipoDocumento/:sequencia',
     loadComponent: () =>
       import('./components/hierarquias-form/hierarquias-form').then(
         (m) => m.HierarquiasForm
