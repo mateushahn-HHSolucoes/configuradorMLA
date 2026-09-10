@@ -1,0 +1,70 @@
+
+<po-page-list 
+  #poPageList 
+  [p-disclaimer-group]="disclaimerGroup" 
+  [p-breadcrumb]="breadcrumb"
+  [p-actions]="actions" 
+  [p-filter]="filterSettings"
+>
+  <po-table
+    [p-selectable]="true"
+    [p-single-select]="false"
+    [p-sort]="true"
+    [p-striped]="true"
+    p-actions-right="true"
+    [p-columns]="columns"
+    [p-items]="items"
+    [p-loading]="loading"
+    [p-hide-table-search]="true"
+    [p-actions]="tableActions"
+    p-container="border"
+    p-hide-columns-manager="true"
+    [p-height]="537"
+    [p-striped]="true"  
+  >
+  </po-table>
+  <div class="po-row" style="align-items: center; justify-content: flex-end; margin-top: 8px; gap: 8px;">
+  <po-button
+    p-kind="primary"
+    [p-disabled]="page === 1"
+    p-label="Primeira"
+    (p-click)="carregarPagina(1)">
+  </po-button>
+
+  <po-button
+    p-icon="an an-caret-left"
+    p-kind="secondary"
+    [p-disabled]="+page === 1"
+    (p-click)="paginaAnterior()">
+  </po-button>
+
+  @for(p of paginasVisiveis; track $index){
+   <po-button
+      [p-label]="p.label"
+      [p-kind]="p.value === page ? 'primary' : 'tertiary'"
+      (p-click)="carregarPagina(p.value)">
+    </po-button>
+  }
+  <po-button
+    p-icon="an an-caret-right"
+    p-kind="secondary"
+    [p-disabled]="+page === totalPages"
+    (p-click)="proximaPagina()">
+  </po-button>
+  <po-button
+    p-kind="primary"
+    [p-disabled]="page === totalPages"
+    p-label="Última"
+    (p-click)="carregarPagina(totalPages)">
+  </po-button>
+</div>
+</po-page-list>
+
+<po-modal #advancedFilterModal p-title="Filtro Avançado" [p-primary-action]="advancedFilterPrimaryAction">
+  <form #f="ngForm">
+    <po-input class="po-md-6" name="estabelecimento" p-label="Estabelecimento" [(ngModel)]="this.estabelecimento" ></po-input>
+    <po-input class="po-md-6" name="lotacao" p-label="Lotação" [(ngModel)]="this.lotacao" ></po-input>
+    <po-input class="po-md-6" name="aprovador" p-label="Aprovador" [(ngModel)]="this.codigo" ></po-input>
+    <po-input class="po-md-6" name="sequencia" p-label="Seq" [(ngModel)]="this.sequencia" ></po-input>
+  </form>
+</po-modal>

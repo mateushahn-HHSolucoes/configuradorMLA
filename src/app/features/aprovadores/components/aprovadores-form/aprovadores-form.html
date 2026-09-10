@@ -1,0 +1,24 @@
+<po-page-list>
+  <h2>{{ modoEdicao ? 'Editar aprovador' : 'Novo aprovador' }}</h2>
+
+  <br>
+  <po-dynamic-form
+    #dynamicForm
+    p-auto-focus="name"
+    [p-fields]="fields"
+    [p-load]="onLoadFields.bind(this)"
+    [p-validate]="this.onChangeFields.bind(this)"
+    [p-validate-fields]="validateFields"
+    [p-value]="aprovador">
+  </po-dynamic-form>
+  <div class="acoes">
+    <po-button p-label="Cancelar" p-kind="primary" (click)="cancelar()" style="margin-right: 10px;"></po-button>
+    <po-button
+      p-label="Salvar"
+      p-kind="primary"
+      (p-click)="poNotification.success('Data saved successfully!'); dynamicForm.form.reset()"
+    >
+  </po-button>
+</div>
+</po-page-list>
+

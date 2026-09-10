@@ -1,0 +1,33 @@
+
+<po-page-list p-title="Aprovadores" [p-actions]="actions">
+  <po-table
+    p-actions-right="true"
+    [p-columns]="columns"
+    [p-items]="items"
+    [p-actions]="tableActions"
+    p-container="border"
+    [p-height]="420"
+    [p-striped]="true"
+    [p-sort]="true">
+  </po-table>
+</po-page-list>
+
+<po-modal #aprovadoresModal p-title="{{ isEditing ? 'Editar' : 'Novo' }} Aprovadores">
+  <div class="po-row">
+    <po-input
+      p-disabled="true"
+      class="po-md-12"
+      name="codUsuario"
+      [(ngModel)]="formItem['codigo']"
+      p-label="Cód. usuário"
+      p-required="true">
+    </po-input>
+  </div>
+
+  
+
+  <div class="po-row modal-actions">
+    <po-button p-kind="secondary" p-label="Cancelar" (p-click)="closeModal()"></po-button>
+    <po-button p-kind="primary" p-label="Salvar" (p-click)="save()"></po-button>
+  </div>
+</po-modal>
