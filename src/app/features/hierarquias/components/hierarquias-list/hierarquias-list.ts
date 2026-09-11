@@ -148,6 +148,7 @@ export class HierarquiasList {
     //if (pagina < 1 || pagina > this.totalPages) return;
     this.loading = true;
     this.page = pagina;
+    this.filtros['page'] = this.page;
     this.hierarquiasService.getByFilter(this.filtros).subscribe({
         next: (resposta) => {
           this.items = resposta.items;
@@ -159,11 +160,11 @@ export class HierarquiasList {
   }
 
   paginaAnterior() {
-    this.carregarPagina(+this.page - 1);
+    this.carregarPagina(this.page - 1);
   }
 
   proximaPagina() {
-    this.carregarPagina(+this.page + 1);
+    this.carregarPagina(this.page + 1);
   }
 
   onChangeDisclaimer(disclaimers:any) {
