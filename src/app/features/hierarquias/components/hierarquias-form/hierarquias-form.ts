@@ -38,10 +38,12 @@ export class HierarquiasForm {
 
   @ViewChild('dynamicForm', { static: true }) dynamicForm?: PoDynamicFormComponent;
 
+  isEditing: boolean = false;
+
   readonly fields: Array<PoDynamicFormField> = [
-    { property: 'estabelecimento', label: 'Estabelecimento', gridColumns: 6, required: true },
-    { property: 'lotacao', label: 'Lotação', gridColumns: 6, required: true },
-    { property: 'tipoDocumento', label: 'Tipo Documento', gridColumns: 6, required: true },
+    { property: 'estabelecimento', label: 'Estabelecimento', gridColumns: 6, required: true , disabled: this.isEditing},
+    { property: 'lotacao', label: 'Lotação', gridColumns: 6, required: true , disabled: this.isEditing},
+    { property: 'tipoDocumento', label: 'Tipo Documento', gridColumns: 6, required: true , disabled: this.isEditing},
     { property: 'sequencia', label: 'Sequência', gridColumns: 3, required: true },
     { property: 'codigo', label: 'Aprovador', gridColumns: 3, required: true },
     { property: 'limite', label: 'Limite', gridColumns: 6, type: 'currency', required: true },
@@ -71,7 +73,11 @@ export class HierarquiasForm {
     this.lotacao = this.route.snapshot.paramMap.get('lotacao');
     this.tipoDocumento = this.route.snapshot.paramMap.get('tipoDocumento');
     this.sequencia = this.route.snapshot.paramMap.get('sequencia');
+    this.isEditing = true;
 
+    
+    
+    
     if (!this.estabelecimento) {
       this.item = {
         estabelecimento: '',
@@ -81,7 +87,12 @@ export class HierarquiasForm {
         codigo: '',
         limite: 0,
       };
+      this.isEditing = false;
       return;
+    }
+    for (const field of this.fields) {
+      const camposDesabilitados = ['estabelecimento', 'lotacao', 'tipoDocumento' ];
+      if (camposDesabilitados.includes(field.property)) field.disabled = this.isEditing;
     }
 
     let params:{
