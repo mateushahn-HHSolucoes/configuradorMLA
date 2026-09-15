@@ -8,10 +8,8 @@ import {
   PoModalModule,
   PoPageListComponent,
   PoModalAction,
-  PoTableColumnSort,
   PoBreadcrumb,
   PoNotificationService,
-  PoTableColumnSortType,
   PoPageAction,
   PoPageModule,
   PoTableAction,
@@ -21,11 +19,18 @@ import {
   PoPageFilter
 } from '@po-ui/ng-components';
 
-import { Hierarquias } from '../../models/hierarquias.model';
+import { Hierarquias, HierarquiaGroup } from '../../models/hierarquias.model';
 import { HierarquiasService } from '../../services/hierarquias.service';
 import { Router } from '@angular/router';
-import { AnonymousSubject } from 'rxjs/internal/Subject';
-
+type HierarquiaAgrupada = {
+  estabelecimento:string;
+  lotacao:string;
+  tipoDocumento:string;
+  registros: Hierarquias[];
+  quantidade: number;
+  expandido: boolean;
+  [key:string]:unknown;
+};
 
 @Component({
   selector: 'app-hierarquias-list',
@@ -43,12 +48,9 @@ export class HierarquiasList {
   @ViewChild('advancedFilterModal', { static: true }) advancedFilterModal!: PoModalComponent;
   @ViewChild('poPageList', { static: true }) poPageList!: PoPageListComponent;
 
-  items: Hierarquias[] = [];
-  itemsFiltered: Hierarquias[] =  [];
+  items: HierarquiaAgrupada[] = [];
+  itemsFiltered: HierarquiaAgrupada[] =  [];
   formItem: Hierarquias = {
-    'estabelecimento':'',
-    'lotacao':'',
-    'tipoDocumento':'',
     'sequencia':'',
     'codigo':'',
     'limite':0,
@@ -71,6 +73,8 @@ export class HierarquiasList {
   get totalPages(): number {
     return Math.ceil(this.totalItems / this.pageSize);
   }
+
+  
 
   get paginasVisiveis(): {label:string, value:number}[] {
     const total = this.totalPages;
@@ -101,17 +105,35 @@ export class HierarquiasList {
   };
 
   readonly columns: PoTableColumn[] = [
-    { property: 'estabelecimento', label: 'Estabelecimento', type: 'string', width: '150px' },
-    { property: 'lotacao', label: 'Lotação', type: 'string', width: '150px' },
-    { property: 'tipoDocumento', label: 'Tipo Documento', type: 'string', width: '150px' },
-    { property: 'sequencia', label: 'Seq', type: 'string', width: '150px' },
-    { property: 'codigo', label: 'Aprovador', type: 'string', width: '100px' },
-    { property: 'limite', label: 'Limite', type: 'currency', format:'BRL',  width: '200px' }
+    { property: 'estabelecimento', label: 'Estabelecimento', type: 'string', width: '200px' },
+    { property: 'lotacao', label: 'Lotação', type: 'string', width: '200px' },
+    { property: 'tipoDocumento', label: 'Tipo Documento', type: 'string', width: '180px' },
+    { property: 'quantidade', label: 'Qtd. registros', type: 'number', width: '140px' }
+  ];
+
+  
+  readonly detailColumns: PoTableColumn[] = [
+    { property: 'sequencia', label: 'Sequência', type: 'string', width: '120px' },
+    { property: 'codigo', label: 'Aprovador', type: 'string', width: '180px' },
+    { property: 'limite', label: 'Limite', type: 'currency', format: 'BRL', width: '180px' }
   ];
 
   readonly tableActions: PoTableAction[] = [
-    { label: 'Editar', action: (item: Hierarquias) => this.router.navigate(['/hierarquias/editar', item.estabelecimento, item.lotacao, item.tipoDocumento, item.sequencia ]) },
-    { label: 'Excluir', action: (item: Hierarquias) => this.confirmDelete(item) }
+    {
+      label: 'Editar',
+      action: (item: HierarquiaAgrupada) => {
+        if (!item) return;
+        this.router.navigate(['/hierarquias/editar', item.estabelecimento, item.lotacao, item.tipoDocumento]);
+      }
+    },
+    {
+      label: 'Excluir',
+      action: (item: Hierarquias | HierarquiaAgrupada) => {
+        /*const registro = this.getPrimeiroRegistro(item as Hierarquias | HierarquiaAgrupada);
+        if (!registro) return;
+        this.confirmDelete(registro);*/
+      }
+    }
   ];
 
   public readonly advancedFilterPrimaryAction: PoModalAction = {
@@ -144,6 +166,36 @@ export class HierarquiasList {
     };
     this.carregarPagina(1);
   }
+
+  agruparHierarquias(registros: HierarquiaGroup[] = []): HierarquiaAgrupada[] {
+    const grupos = new Map<string, HierarquiaAgrupada>();
+    
+    registros.forEach((registro) => {
+      const chave = [
+        registro.estabelecimento ?? '',
+        registro.lotacao ?? '',
+        registro.tipoDocumento ?? ''
+      ].join('|');
+
+      const registros:Hierarquias[] = registro.Hierarquias;
+
+      grupos.set(chave,  {
+        estabelecimento: registro.estabelecimento ?? '',
+        lotacao: registro.lotacao ?? '',
+        tipoDocumento: registro.tipoDocumento ?? '',
+        registros: registros,
+        quantidade: registros.length,
+        expandido: false,
+      });
+    });
+
+    return Array.from(grupos.values()).sort((a, b) => (
+      `${a.estabelecimento}-${a.lotacao}-${a.tipoDocumento}`.localeCompare(`${b.estabelecimento}-${b.lotacao}-${b.tipoDocumento}`)
+    ));
+  } 
+
+  showGroupDetail = (row: HierarquiaAgrupada): boolean => !!row?.registros?.length;
+
   carregarPagina(pagina: number) {
     //if (pagina < 1 || pagina > this.totalPages) return;
     this.loading = true;
@@ -151,13 +203,15 @@ export class HierarquiasList {
     this.filtros['page'] = this.page;
     this.hierarquiasService.getByFilter(this.filtros).subscribe({
         next: (resposta) => {
-          this.items = resposta.items;
-          this.totalItems = resposta.total; 
+          this.items = this.agruparHierarquias(resposta.items);
+          this.totalItems = resposta.total;
           this.loading = false;
         },
         error: () => this.loading = false
       });
   }
+
+
 
   paginaAnterior() {
     this.carregarPagina(this.page - 1);

@@ -20,8 +20,24 @@
     p-container="border"
     p-hide-columns-manager="true"
     [p-height]="537"
-    [p-striped]="true"  
+    [p-striped]="true"
   >
+  
+  <ng-template p-table-row-template let-rowItem let-i="rowIndex" [p-table-row-template-show]="showGroupDetail">
+      <div style="padding: 12px 16px 16px 16px; background: #f7f7f7; border-top: 1px solid #e6e6e6;">
+          <po-table
+            [p-columns]="detailColumns"
+            [p-items]="rowItem.registros"
+            [p-striped]="false"
+            [p-hide-table-search]="true"
+            [p-hide-columns-manager]="true"
+            [p-striped]="true"
+            [p-height]="50 + rowItem.registros.length * 50">
+            
+          </po-table>
+        
+      </div>
+    </ng-template>
   </po-table>
   <div class="po-row" style="align-items: center; justify-content: flex-end; margin-top: 8px; gap: 8px;">
   <po-button

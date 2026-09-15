@@ -1,5 +1,10 @@
-<po-page-list>
+
+<po-page-list 
+  [p-actions]="actions" 
+>
+
   <h2>{{ modoEdicao ? 'Editar hierarquia' : 'Nova hierarquia' }}</h2>
+  
 
   <br />
 
@@ -12,8 +17,37 @@
     [p-validate]="onChangeFields.bind(this)"
   ></po-dynamic-form>
 
-  <div class="acoes">
-    <po-button p-label="Cancelar" p-kind="primary" (click)="cancelar()" style="margin-right: 10px;"></po-button>
-    <po-button p-label="Salvar" p-kind="primary" (p-click)="salvar()"></po-button>
+  
+  <po-table [p-selectable]="true"
+    [p-single-select]="false"
+    [p-sort]="true"
+    [p-striped]="true"
+    p-actions-right="true"
+    [p-columns]="columns"
+    [p-items]="item.Hierarquias"
+    [p-hide-table-search]="true"
+    [p-actions]="tableActions"
+    p-container="border"
+    (p-delete-items)="deleteItem(hierarquiaSelecionada)"
+    p-hide-columns-manager="true"
+    [p-height]="50 + item.Hierarquias.length * 50"
+    (p-delete-items)="deleteItems($event)"
+    [p-hide-batch-actions]="false"
+    [p-striped]="true">
+  </po-table>
+
+  <div class="po-row">
+    <po-button (p-click)="inserirAprovador()" p-label="Inserir Aprovador" p-kind="secondary" style="margin-top:10px"></po-button>
   </div>
+
+  <po-modal #editarHierarquiaModal [p-primary-action]="this.actionSave" [p-secondary-action]="this.actionCancel"  p-title="{{ modoEdicao ? 'Editar' : 'Novo' }} Aprovador ">
+    <po-dynamic-form
+      #editForm
+      p-auto-focus="codigo"
+      [p-fields]="editFields"
+      [p-value]="hierarquiaSelecionada"
+      [p-load]="onLoadEditFields.bind(this)"
+      [p-validate]="onChangeEditFields.bind(this)"
+    ></po-dynamic-form>
+  </po-modal>
 </po-page-list>

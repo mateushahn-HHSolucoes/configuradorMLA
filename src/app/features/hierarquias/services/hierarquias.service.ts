@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
 
-import { Hierarquias } from '../models/hierarquias.model';
+import { Hierarquias, HierarquiaGroup } from '../models/hierarquias.model';
 import { HttpClient } from '@angular/common/http';
 import { PagedResult } from '../../../shared/models/api.models';
 import {
@@ -19,17 +19,18 @@ export class HierarquiasService {
   items:Hierarquias[] = [];
 
   readonly defaultItems:Hierarquias[] = [];
-  
+
+  private auth = { Authorization: 'Basic YXBwOkMzRE5JQmpVaHVTVg==' };
 
   private readonly urlApi = 'https://circulooperario192206.datasul.cloudtotvs.com.br/api/rest/v1/apiMLA/hierarquias';
 
-  getAll(params:any): Observable<PagedResult<Hierarquias>> {
-    return this.http.get<PagedResult<Hierarquias>>(this.urlApi, {headers: {'Authorization': 'Basic YXBwOkMzRE5JQmpVaHVTVg=='}, params:params});
+  getAll(params:any): Observable<PagedResult<HierarquiaGroup>> {
+    return this.http.get<PagedResult<HierarquiaGroup>>(this.urlApi, {headers: this.auth, params:params});
   }
 
-  getByFilter(params:{estabelecimento?:string, lotacao?:string, tipoDocumento?:string, codigo?:string, sequencia?:string }): Observable<PagedResult<Hierarquias>> {
+  getByFilter(params:{estabelecimento?:string, lotacao?:string, tipoDocumento?:string, codigo?:string, sequencia?:string }): Observable<PagedResult<HierarquiaGroup>> {
     console.log('getByFilter');
-    return this.http.get<PagedResult<Hierarquias>>(this.urlApi, {headers: {'Authorization': 'Basic YXBwOkMzRE5JQmpVaHVTVg=='}, params:params });
+    return this.http.get<PagedResult<HierarquiaGroup>>(this.urlApi, {headers: this.auth, params:params });
   }
 
   getById(id: string | null): Observable<Hierarquias> {
@@ -43,18 +44,18 @@ export class HierarquiasService {
         limite: 0,
       });
     }
-
     const item = this.readStorage()?.find(
       (current) => current.codigo === id || current['id'] === id
     );
-
     if (item) {
       return of({ ...item });
     }
-
     return this.http.get<Hierarquias>(`${this.urlApi}/${id}`, {
-      headers: { Authorization: 'Basic YXBwOkMzRE5JQmpVaHVTVg==' },
+      headers: this.auth,
     });
+  }
+  post(payload:HierarquiaGroup): Observable<HierarquiaGroup> {
+    return this.http.post<HierarquiaGroup>(this.urlApi, payload, {headers: this.auth});
   }
 
   create(item: Hierarquias): Observable<Hierarquias> {
