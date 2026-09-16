@@ -25,6 +25,8 @@ export class TipoDocumentoComboFilter implements PoComboFilter {
             }
             return { label:'', value:''};
           })
+      item.unshift({label: "0-TODOS", value:'0'});
+      console.log(item);
       return item;          
       })
     );

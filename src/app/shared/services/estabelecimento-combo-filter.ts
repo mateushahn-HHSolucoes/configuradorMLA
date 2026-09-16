@@ -25,6 +25,7 @@ export class EstabelecimentoComboFilter implements PoComboFilter {
             }
             return { label:'', value:''};
           })
+      item.unshift({label: "0-TODOS", value:' '});
       return item;          
       })
     );
@@ -35,6 +36,7 @@ export class EstabelecimentoComboFilter implements PoComboFilter {
       map(estabelecimentos => {
         var label:string = "";
         var value:string = "";
+        if (value = "") return {label:"0-TODOS", value:" "};
         if (estabelecimentos.codigo !== "" ) {
           label  = `${estabelecimentos.codigo}-${estabelecimentos.descricao}`;
           value = estabelecimentos.codigo;

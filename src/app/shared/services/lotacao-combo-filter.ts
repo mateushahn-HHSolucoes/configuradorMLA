@@ -25,6 +25,7 @@ export class LotacaoComboFilter implements PoComboFilter {
             }
             return { label:'', value:''};
           })
+      item.unshift({label: "0-TODOS", value:' '});
       return item;          
       })
     );
@@ -35,6 +36,7 @@ export class LotacaoComboFilter implements PoComboFilter {
       map(lotacoes => {
         var label:string = "";
         var value:string = "";
+        if (value = "") return {label:"0-TODOS", value:" "};
         if (lotacoes.codigo !== "" ) {
           label  = `${lotacoes.codigo}-${lotacoes.descricao}`;
           value = lotacoes.codigo;

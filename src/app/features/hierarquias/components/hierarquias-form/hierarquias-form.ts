@@ -268,6 +268,7 @@ export class HierarquiasForm {
   salvarRegistro(): void {
     const payload = {...this.item};
     console.log(JSON.stringify(payload));
+    
  /*   const payload = { ...this.item };
     const request$ = this.itemId
       ? this.hierarquiasService.update(this.itemId, payload)
